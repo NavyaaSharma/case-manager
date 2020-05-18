@@ -9,7 +9,7 @@ mongoose.connect(db.mongoDB, {
     useUnifiedTopology:true
 })
 const userRoute=require('./router/admin')
-var port=3000 || process.env.PORT
+var port= process.env.PORT || 3000
 app.use(express.json())
 app.use(userRoute)
 
