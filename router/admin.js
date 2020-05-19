@@ -71,7 +71,7 @@ router.get('/adv/details',auth,async(req,res)=>{
         {
             res.status(404).send({"error":"No case existes"})
         }
-        res.status(200).send(user)
+        res.status(200).send({payload:user})
     }
     catch
     {
