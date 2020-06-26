@@ -38,9 +38,13 @@ var caseSchema=new mongoose.Schema({
     [{
         date:
         {
-            type:String,
-            
+            type:String  
         },
+        // nextdate:
+        // {
+        //     type:String,
+        //     default:"no date"
+        // },
         msg:{
             type:String
         },
@@ -51,8 +55,15 @@ var caseSchema=new mongoose.Schema({
         details:
         {
             type:String
-        }
+        },
+        files:
+        [{
+            path:{
+                type:Buffer
+            }
+        }]
     }]
+    
 })
 
 var Case=mongoose.model('Case',caseSchema)

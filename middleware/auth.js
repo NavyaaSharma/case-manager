@@ -13,7 +13,7 @@ const auth=async (req,res,next)=>{
         req.user=user
         next()
     }catch(e){
-        res.status(400).send({"error":"please authenticate user"})
+        res.status(401).send({"error":"please authenticate user"})
     }
     
 }
