@@ -38,7 +38,7 @@ router.post('/client/login',async(req,res)=>{
         {
             res.status(404).send()
         }
-        res.send({token})
+        res.send({token,user})
     }
     catch{
         res.status(400).send({"err":"invalid phone number or password"})
