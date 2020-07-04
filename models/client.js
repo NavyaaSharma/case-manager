@@ -3,12 +3,11 @@ var validator=require('validator')
 var bcrypt=require('bcryptjs')
 var jwt=require('jsonwebtoken')
 
-var userSchema=new mongoose.Schema({
+var clientSchema=new mongoose.Schema({
     email:
     {
         type:String,
         required:true,
-        unique:true,
         trim:true,
         validate(value)
         {
@@ -18,6 +17,11 @@ var userSchema=new mongoose.Schema({
             }
         }
     },
+    phone:{
+        type:Number,
+        unique:true,
+        required:true
+    },
     password:
     {
         type:String,
@@ -26,30 +30,22 @@ var userSchema=new mongoose.Schema({
     name:
     {
         type:String
-    },
-    tokens:[{
-        token:{
-            type:String
-        }
-    }]
+    }
 })
 
-userSchema.methods.toJSON=function(){
+clientSchema.methods.toJSON=function(){
     const user=this
     const userObject=user.toObject()
     delete user.password
-    delete user.tokens
     return userObject
 }
-userSchema.methods.generateToken=async function(){
+clientSchema.methods.generateToken=async function(){
     const user=this
-    const token=jwt.sign({_id:user._id.toString()},'mysecret',{expiresIn:120})
-    //user.tokens=user.tokens.concat({token})
-    //await user.save()
+    const token=jwt.sign({_id:user._id.toString()},'mysecret',{expiresIn:'1d'})
     return token
 }
-userSchema.statics.findByCredentials=async(email,password)=>{
-    const user=await User.findOne({email})
+clientSchema.statics.findByCredentials=async(phone,password)=>{
+    const user=await Client.findOne({phone})
     if(!user)
     {
         throw new Error('Unable to login')
@@ -61,7 +57,7 @@ userSchema.statics.findByCredentials=async(email,password)=>{
     }
     return user
 }
-userSchema.pre('save',async function(next){
+clientSchema.pre('save',async function(next){
     const user=this
     if(user.isModified('password'))
     {
@@ -70,5 +66,5 @@ userSchema.pre('save',async function(next){
     }
 })
 
-var User=mongoose.model('User',userSchema)
-module.exports=User
+var Client=mongoose.model('Client',clientSchema)
+module.exports=Client

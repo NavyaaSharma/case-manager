@@ -12,10 +12,13 @@ mongoose.connect(db.mongoDB, {
     useUnifiedTopology:true
 })
 const userRoute=require('./router/admin')
+const clientRoute=require('./router/client')
+
 var port= process.env.PORT || 3000
+
 app.use(express.json())
 app.use(userRoute)
-
+app.use(clientRoute)
 
 app.listen(port,()=>{
     console.log('server running')

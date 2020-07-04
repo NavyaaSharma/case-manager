@@ -2,19 +2,39 @@ var jwt=require('jsonwebtoken')
 var User=require('../models/admin')
 
 const auth=async (req,res,next)=>{
-    try{
-        const token=req.header('Authorization').replace('JWT ','')
-        const decoded=jwt.verify(token,'mysecret')
-        const user=User.findOne({_id:decoded._id,'tokens.token':token})
-        if(!user)
+
+        const check=req.header('Authorization')
+        if(check)
         {
-            res.status(404).send({"error":"user not found"})
+            const token=req.header('Authorization').replace('JWT ','')
+            jwt.verify(token,'mysecret',(err,user)=>{
+                if(err)
+                {
+                    res.status(403).send({"error":"please authenticate user"})
+                }
+                else{
+                    req.user = user;
+                // console.log(req.user)
+                // console.log(req.user._id)
+                next();
+                }
+                
+            })
+            // const user=User.findOne({_id:decoded._id,'tokens.token':token})
+            // if(!user)
+            // {
+            //     res.status(404).send({"error":"user not found"})
+            // }
+            
+            
+            // next()
         }
-        req.user=user
-        next()
-    }catch(e){
-        res.status(401).send({"error":"please authenticate user"})
-    }
+        else{
+            res.status(401).send({"error":"please authenticate user"})
+        }
+    // }catch(e){
+    //     res.status(401).send({"error":"please authenticate user"})
+    // }
     
 }
 
