@@ -172,7 +172,7 @@ router.post('/adv/update/case/date',auth,async(req,res)=>{
 
 router.get('/adv/allCases',auth,async(req,res)=>{
     try{
-        var user=Case.find({})
+        var user=await Case.find({})
         if(!user)
         {
             res.status(404).send({err:"No data found"})

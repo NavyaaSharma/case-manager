@@ -47,7 +47,7 @@ router.post('/client/login',async(req,res)=>{
 
 router.get('/client/count',auth,async(req,res)=>{
     
-    Case.count({phone:req.body.phone}, function(err, result) {
+    Case.count({phone:req.query.phone}, function(err, result) {
         if (err) {
           console.log(err);
         } else {
