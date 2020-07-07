@@ -8,53 +8,58 @@ var caseSchema=new mongoose.Schema({
     },
     name:{
         type:String,
-        required:true
+        default:"Not provided"
     },
     phone:{
         type:String,
-        default:"none"
+        default:"Not provided"
+    },
+    email:
+    {
+        type:String,
+        default:"Not provided"
     },
     judge:
     {
         type:String,
-        required:true
+        default:"Not provided"
     },
     party:
     {
         party1:{
             type:String,
-            required:true
+            default:"Not provided"
         },
         party2:{
             type:String,
-            required:true
+            default:"Not provided"
         }
     },
     desc:
     {
-        type:String
+        type:String,
+        default:"not provided"
     },
     date:
     [{
         date:
         {
-            type:String  
+            type:String,
+            default:"Not provided"
         },
-        // nextdate:
-        // {
-        //     type:String,
-        //     default:"no date"
-        // },
         msg:{
-            type:String
+            type:String,
+            default:"Not provided"
         },
         time:
         {
-            type:String
+            type:String,
+            default:"10 AM"
         },
         details:
         {
-            type:String
+            type:String,
+            default:"Not provided"
         },
         files:
         [{

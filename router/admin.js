@@ -252,7 +252,7 @@ catch(e)
 }
 })
 
-  router.post('/send/email',async function(req,res){
+  router.post('/send/email',auth,async function(req,res){
     try{
         var mailOptions={
                 from : 'sandeepsharma600600@gmail.com',
