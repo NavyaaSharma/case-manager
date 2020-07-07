@@ -245,7 +245,7 @@ catch(e)
 })
 
 let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', 
+    host: 'gmail', 
     port:465,
     auth: {
       user: 'sandeepsharma600600@gmail.com', // your gmail address
