@@ -1,5 +1,6 @@
 const express=require('express')
 const multer=require('multer')
+const nodemailer=require('nodemailer')
 const Case=require('../models/case')
 const User=require('../models/admin')
 var auth=require('../middleware/auth')
@@ -242,4 +243,40 @@ catch(e)
     res.status(400).send("Bad req")
 }
 })
+
+let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', 
+    port:465,
+    auth: {
+      user: 'sandeepsharma600600@gmail.com', // your gmail address
+      pass: process.env.password// your gmail password
+    }
+  });
+
+  router.post('/send/email',async function(req,res){
+    try{
+        var mailOptions={
+                from : 'sandeepsharma600600@gmail.com',
+                to : req.body.to,
+                subject : req.body.subject,
+                html : req.body.message
+            }
+        console.log(mailOptions)
+        console.log(process.env.password)
+        transporter.sendMail(mailOptions, function(error, response){
+        if(error){
+                console.log(error)
+            res.status(401).json("error")
+        }else{
+                console.log("Message sent: ");
+            res.status(200).json("sent")
+            }
+        });
+    }
+
+    catch(e)
+    {
+        res.status(400).send()
+    }
+});
 module.exports=router
