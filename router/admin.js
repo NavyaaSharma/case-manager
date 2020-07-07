@@ -186,7 +186,7 @@ router.get('/adv/allCases',auth,async(req,res)=>{
         {
             res.status(404).send({err:"No data found"})
         }
-        res.status(200).send(user)
+        res.status(200).json({payload:user})
     }
     catch
     {
