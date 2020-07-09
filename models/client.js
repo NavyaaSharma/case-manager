@@ -4,19 +4,6 @@ var bcrypt=require('bcryptjs')
 var jwt=require('jsonwebtoken')
 
 var clientSchema=new mongoose.Schema({
-    email:
-    {
-        type:String,
-        required:true,
-        trim:true,
-        validate(value)
-        {
-            if(!validator.isEmail(value))
-            {
-                throw new Error('email is not valid')
-            }
-        }
-    },
     phone:{
         type:String,
         unique:true,

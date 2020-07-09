@@ -26,12 +26,7 @@ var userSchema=new mongoose.Schema({
     name:
     {
         type:String
-    },
-    tokens:[{
-        token:{
-            type:String
-        }
-    }]
+    }
 })
 
 userSchema.methods.toJSON=function(){
