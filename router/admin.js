@@ -3,8 +3,9 @@ const multer=require('multer')
 const nodemailer=require('nodemailer')
 const Case=require('../models/case')
 const User=require('../models/admin')
-var auth=require('../middleware/auth')
+var uauth=require('../middleware/auth')
 const router=new express.Router()
+
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', 
     port:465,
@@ -13,6 +14,62 @@ let transporter = nodemailer.createTransport({
       pass: process.env.password// your gmail password
     }
   });
+
+  const {google} = require('googleapis');
+
+  let auth = new google.auth.OAuth2(
+    '766084042057-34svlo44haeekuckndvjv7ga481l4ag1.apps.googleusercontent.com',
+    'b-BjUBuFENxsNofAJ3B84skQ',
+    'https://developers.google.com/oauthplayground'
+  );
+  // Now use OAuth response to get an user authenticated API client
+  let credentials = {
+    access_token:'ya29.a0AfH6SMBwXgL1CltwJICQPZhsIITRrfy3S_GQpY6WeBq4p3W38IKigD_KhnmvBshQURADuvmEdDXcs8wGAwwyDVWtwJTtaBH6bf2wU5XLU7teJ43ZbSHlJid-_8NoZiifRGLL6McXkhjHwYww6OX49oxiS_W1mNjLjDc',
+    token_type:'Bearer', // mostly Bearer
+    refresh_token:'1//04ad601H2Jg9RCgYIARAAGAQSNwF-L9IrdpVA121aO00h9QbXfcjqZclKx-gFsErrcWK9njMhItURUf58y4e2-XOSPc-lryyhR7g'
+  };
+  auth.setCredentials(credentials);
+
+var atc=(req,res,next)=>{
+    console.log(req.body.date_details.revdate)
+    let calendar = google.calendar({version: 'v3', auth});
+    calendar.events.insert({
+        auth: auth,
+        calendarId: 'primary',
+        resource: {
+            'summary': 'Case Hearing Date',
+            'description': `Case hearing for the case : ${req.body.name}`,
+            'start': {
+                'dateTime': `${req.body.date_details.revdate}T04:30:00`,
+                'timeZone':'utc'
+            },
+            'end': {
+                'dateTime': `${req.body.date_details.revdate}T04:30:00`,
+                'timeZone':'utc'
+            },
+            'attendees': [],
+            'reminders': {
+                'useDefault': false,
+                'overrides': [
+                    {'method': 'email', 'minutes': 24 * 60},
+                    {'method': 'popup', 'minutes': 180},
+                ],
+            },
+            'colorId' : 4 ,
+            'sendUpdates':'all',
+            'status' : 'confirmed'
+        },
+    }, (err, success) => {
+        if (err) {
+            console.log(err)
+            res.status(401).send("Can't create event")
+            
+        }
+        else{
+            next()
+        }
+    });
+}
 
 router.post('/admin/create',async(req,res)=>{
     const user=new User(req.body)
@@ -40,7 +97,7 @@ router.post('/admin/login',async(req,res)=>{
         res.status(400).send({"err":"invalid email or password"})
     }
 })
-router.post('/adv/add-case',auth,async(req,res)=>{
+router.post('/adv/add-case',uauth,async(req,res)=>{
     var user=new Case(req.body)
         await user.save().then(()=>{
             res.status(201).send(user)
@@ -51,7 +108,7 @@ router.post('/adv/add-case',auth,async(req,res)=>{
 })
 
 
-router.post('/adv/add-date',auth,async(req,res)=>{
+router.post('/adv/add-date',uauth,atc,async(req,res)=>{
     try
     {   
         const user=await Case.findOne({case_no:req.body.case_no})
@@ -62,7 +119,9 @@ router.post('/adv/add-date',auth,async(req,res)=>{
         else{
             user.date.push(req.body.date_details)
         await user.save()
-        res.status(201).send(user)
+        //addtocalender({name:user.name,revdate:req.body.date_details.revdate})
+        res.status(201).send("Date added !")
+    
         }
     }
     catch
@@ -71,7 +130,7 @@ router.post('/adv/add-date',auth,async(req,res)=>{
     }
 })
 
-router.post('/adv/details',auth,async(req,res)=>{
+router.post('/adv/details',uauth,async(req,res)=>{
     try
     {
         const user= await Case.find({phone:req.body.phone})
@@ -89,7 +148,7 @@ router.post('/adv/details',auth,async(req,res)=>{
     }
 })
 
-router.post('/adv/moredetails',auth,async(req,res)=>{
+router.post('/adv/moredetails',uauth,async(req,res)=>{
     try
     {
         const user= await Case.findOne({case_no:req.body.case_no})
@@ -107,7 +166,7 @@ router.post('/adv/moredetails',auth,async(req,res)=>{
     }
 })
 
-router.get('/adv/count',auth,async(req,res)=>{
+router.get('/adv/count',uauth,async(req,res)=>{
     
     Case.count({}, function(err, result) {
         if (err) {
@@ -118,7 +177,7 @@ router.get('/adv/count',auth,async(req,res)=>{
       });
 })
 
-router.post('/adv/update/case/details',auth,async(req,res)=>{
+router.post('/adv/update/case/details',uauth,async(req,res)=>{
     const updates=Object.keys(req.body)
     try{
         console.log(req.body)
@@ -139,7 +198,7 @@ router.post('/adv/update/case/details',auth,async(req,res)=>{
     }
 })
 
-router.post('/adv/update/case/date',auth,async(req,res)=>{
+router.post('/adv/update/case/date',uauth,async(req,res)=>{
     try{
         const user=await Case.findOne({case_no: req.query.case_no})
         if(!user)
@@ -179,7 +238,7 @@ router.post('/adv/update/case/date',auth,async(req,res)=>{
     }
 })
 
-router.get('/adv/allCases',auth,async(req,res)=>{
+router.get('/adv/allCases',uauth,async(req,res)=>{
     try{
         var user=await Case.find({})
         if(!user)
@@ -252,7 +311,7 @@ catch(e)
 }
 })
 
-  router.post('/send/email',auth,async function(req,res){
+  router.post('/send/email',uauth,async function(req,res){
     try{
         var mailOptions={
                 from : 'sandeepsharma600600@gmail.com',
