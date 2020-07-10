@@ -83,6 +83,26 @@ router.post('/admin/create',async(req,res)=>{
     // res.status(200).send(req.body)
 })
 
+router.post('/admin/forgotpassword',async(req,res)=>{
+    const user=await User.findOne({email:req.body.email})
+    if(user)
+    {
+        try{
+            user.password=req.body.password
+            await user.save()
+            res.status(201).send(user)
+        }
+        catch{
+            res.status(400).send()
+        }
+    }
+    else
+    {
+        res.status(401).send()
+    }
+    
+})
+
 router.post('/admin/login',async(req,res)=>{
     try{
         const user=await User.findByCredentials(req.body.email,req.body.password)
@@ -225,6 +245,10 @@ router.post('/adv/update/case/date',uauth,async(req,res)=>{
                 if(req.body.details)
                 {
                     user.date[i].details=req.body.details
+                }
+                if(req.body.venue)
+                {
+                    user.date[i].venue=req.body.venue
                 }
                 break;
             }

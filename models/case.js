@@ -61,6 +61,9 @@ var caseSchema=new mongoose.Schema({
             type:String,
             default:"Not provided"
         },
+        venue:{
+            type:String
+        },
         files:
         [{
             path:{

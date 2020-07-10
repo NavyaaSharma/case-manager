@@ -30,6 +30,25 @@ router.post('/client/create',async(req,res)=>{
     }
 })
 
+router.post('/client/forgotpassword',async(req,res)=>{
+    const user=await Client.findOne({phone:req.body.phone})
+    if(user)
+    {
+        try{
+            user.password=req.body.password
+            await user.save()
+            res.status(201).send(user)
+        }
+        catch{
+            res.status(400).send()
+        }
+    }
+    else
+    {
+        res.status(401).send()
+    }
+    
+})
 router.post('/client/login',async(req,res)=>{
     try{
         const user=await Client.findByCredentials(req.body.phone,req.body.password)
