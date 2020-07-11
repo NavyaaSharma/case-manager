@@ -10,6 +10,7 @@ const auth=async (req,res,next)=>{
             jwt.verify(token,'mysecret',(err,user)=>{
                 if(err)
                 {
+                    console.log(err)
                     res.status(403).send({"error":"please authenticate user"})
                 }
                 else{
